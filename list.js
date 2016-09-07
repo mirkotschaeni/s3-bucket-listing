@@ -1,3 +1,5 @@
+// see https://github.com/mirkotschaeni/s3-bucket-listing 
+
 // TODO 
 // * reenable paging support
 // * reenable sub path listing
