@@ -29,16 +29,16 @@ function readListing(path) {
 	// expects json with bucketName and bucketUrl keys
 	$.get("listOptions.json").then(function(cfg) {
 		console.log("list Options: " + cfg + " " + (typeof cfg));
-		
+
 		var url = cfg.bucketUrl + "?delimiter=/"
 		if (path) {
 			url = url + "&prefix=" + path;
 		}
-	
+
 		var displayPath = "/" + path;
 		document.title = displayPath;
 		var displayPathElements = displayPath.split("/");
-	
+
 		var headingHtml = "<a href='/index.html'>" + cfg.bucketName + "<a>";
 		var currentPrefix = "";
 		for (var i=0; i<displayPathElements.length; i++) {
@@ -49,14 +49,14 @@ function readListing(path) {
 			currentPrefix += displayPathElement + "/";
 			headingHtml += " / <a href='/index.html?prefix=" + currentPrefix + "'>"  + displayPathElement + "<a>";
 		}
-	
+
 		document.getElementById("heading").innerHTML = headingHtml;
-	
+
 		$.get(url).done(function(data) {
 			var xml = $(data);
 			var info = getInfoFromS3Data(xml);
 			window.ginfo = info;
-	
+
 			for(var i=0; i<info.objects.length;i++) {
 				var object = info.objects[i];
 				if (object.key == "index.html") continue;
@@ -75,7 +75,7 @@ function readListing(path) {
 				var href = "";
 				if (object.type == "file") {
 					href = cfg.bucketUrl + "/" + object.key;
-	
+
 				} else if (object.type == "directory") {
 					href = "index.html?prefix=" + object.key;
 				}
@@ -87,7 +87,7 @@ function readListing(path) {
 				var sizeTd = document.createElement("td");
 				sizeTd.innerHTML = object.size;
 				tr.appendChild(sizeTd);				
-	
+
 				document.getElementById("objectContainer").appendChild(tr);
 			}
 		}).fail(function(error) {
@@ -96,14 +96,14 @@ function readListing(path) {
 	}).fail(function(error) {
 		console.error(error);
 	});
-	
+
 
 }
 
 function objectComparator(o1, o2) {
 	var s1 = o1.key.toLowerCase();
 	var s2 = o2.key.toLowerCase();
-	
+
 	if (s1 < s2) return -1;
 	if (s1 > s2) return 1;
 	return 0;
@@ -131,7 +131,7 @@ function getInfoFromS3Data(xml) {
   });
   var objects = $.merge(files, directories);
   objects.sort(objectComparator)
-  
+
   if ($(xml.find('IsTruncated')[0]).text() == 'true') {
 	var nextMarker = $(xml.find('NextMarker')[0]).text();
   } else {
